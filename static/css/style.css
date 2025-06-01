@@ -1,0 +1,76 @@
+/* General Styles */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer {
+  margin-top: auto;
+}
+
+/* Chat Interface Styles */
+#chat-messages {
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+  padding: 1rem;
+}
+
+.message {
+  max-width: 80%;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.user-message {
+  background-color: #007bff;
+  color: white;
+  margin-left: auto;
+}
+
+.ai-message {
+  background-color: #e9ecef;
+  color: #212529;
+  margin-right: auto;
+}
+
+.error-message {
+  background-color: #dc3545;
+  color: white;
+  margin-right: auto;
+}
+
+/* Card Styles */
+.card {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+/* Table Styles */
+.table-responsive {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+/* Form Styles */
+.input-group textarea {
+  resize: none;
+}
+
+/* Navigation Styles */
+.navbar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-link {
+  transition: color 0.2s;
+}
+
+.nav-link:hover {
+  color: #007bff !important;
+}

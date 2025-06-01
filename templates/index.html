@@ -1,0 +1,50 @@
+{% extends "base.html" %} {% block title %}Home - Flask Platform Demo{% endblock
+%} {% block content %}
+<div class="row">
+  <div class="col-md-12 text-center mb-4">
+    <h1>Welcome to Flask Platform Demo</h1>
+    <p class="lead">
+      A demonstration of Flask features including AI integration, database
+      caching, and more.
+    </p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">AI Chat</h5>
+        <p class="card-text">
+          Try our AI-powered chat interface that uses Google's Gemini model to
+          provide intelligent responses.
+        </p>
+        <a href="/ai" class="btn btn-primary">Try AI Chat</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Database Cache</h5>
+        <p class="card-text">
+          View and manage the SQLite database cache that stores conversation
+          history and context.
+        </p>
+        <a href="/cache" class="btn btn-primary">View Cache</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Metrics</h5>
+        <p class="card-text">
+          Monitor application performance with Prometheus metrics integration.
+        </p>
+        <a href="/metrics" class="btn btn-primary">View Metrics</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

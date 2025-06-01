@@ -1,0 +1,101 @@
+Teaching Script Outline: Module 10 - AI LLM Integrations (Expanded)
+
+Goal: Provide a detailed script outline for a 10-15 minute video explaining how to integrate an LLM into a Flask app, using the project's implemented AI features as a comprehensive example.
+Target Length: 10-15 minutes
+Tone: Conversational
+
+---
+
+1. Introduction (approx. 1.5 mins)
+   - Hook: "Hey everyone! Welcome back to the module series. In this video, we're tackling one of the most exciting topics: integrating Artificial Intelligence, specifically a Large Language Model like Google Gemini, into our Flask web application."
+   - "You've seen websites that can chat with you, generate text, or answer complex questions using AI. Today, I'll show you the fundamental steps to build that capability into your own Flask project, using the example of the platform we've been building."
+   - "We'll build a simple chatbot that can understand user questions and provide helpful responses, while also learning from previous conversations stored in our database."
+   - "By the end of this video, you'll know how to set up the AI library, create an API endpoint, send prompts to the AI, and make your chatbot smarter by giving it context from your database."
+
+2. Reviewing Project Structure for AI (approx. 1.5 mins)
+   - "Before we jump into the AI code, let's quickly remind ourselves of our project structure, especially how we organized things using Flask Blueprints."
+   - **Key Concept:** Blueprints (`ai_routes.py`). "We put all our AI-related web routes and logic into a separate Blueprint file called `ai_routes.py`. This keeps our main `app.py` clean and makes our AI features modular."
+   - Show `app.py` briefly: Point out where the Flask `app` is created and where the `ai_routes` blueprint is imported and registered with the `/api` URL prefix (`app.register_blueprint(ai_bp, url_prefix='/api')`). "This means any route defined in `ai_routes.py` will automatically start with `/api`."
+   - Show `ai_routes.py` briefly: Point out the `Blueprint` definition at the top.
+   - **Learning Objective:** Understand how Blueprints help organize larger Flask applications, especially when adding distinct features like AI.
+   - **Practical Example:** "Think of Blueprints like separate modules in your application. Just like how you might have different sections in a website (like a blog section, a shop section), Blueprints help us organize our code into logical sections."
+
+3. Setting up the AI Library and API Key (approx. 2-3 mins)
+   - "The first step to talking to an AI model is setting up the right tools in our code. We use a Python library provided by the AI service – in our project, that's the `google-generativeai` library."
+   - **Key Concept:** Installing Libraries (`requirements.txt`). "We add `google-generativeai` and `python-dotenv` to our `requirements.txt` file so anyone using our project can easily install them."
+   - Show `requirements.txt` in the demo project: Highlight `google-generativeai` and `python-dotenv`.
+   - **Key Concept:** API Keys and Environment Variables (`.env`, `python-dotenv`). "To use the AI service, we need an API key. This is like a password that tells the service who we are. It's crucial to keep this key secret! We use environment variables and the `python-dotenv` library to load our API key from a `.env` file, keeping it out of our main code and Git repository."
+   - Show `.env.example` (mention the user needs to create `.env`): Explain its purpose.
+   - Show `ai_routes.py`: Show `from dotenv import load_dotenv` and `load_dotenv()` at the top.
+   - Show `ai_routes.py`: Show `genai.configure(api_key=os.getenv("GOOGLE_API_KEY") or "YOUR_GOOGLE_API_KEY")`. Explain that `load_dotenv()` loads the key into `os.environ`, and `os.getenv` retrieves it. Mention the fallback "YOUR_GOOGLE_API_KEY" for the example.
+   - **Mistakes to Avoid:** Never commit your actual `.env` file to Git! Hardcoding API keys.
+   - **Learning Objective:** Learn how to securely manage API keys using environment variables and set up the AI client library.
+   - **Practical Example:** "Think of API keys like your house keys. You wouldn't leave your house keys in plain sight, right? Similarly, we keep our API keys in a secure `.env` file that's not shared with others."
+
+4. Creating the AI API Endpoint (approx. 2-3 mins)
+   - "Now that the library is set up, let's look at the web endpoint our frontend will use to send prompts and receive AI responses."
+   - **File:** `ai_routes.py`
+   - Show the route decorator: `@ai_routes.route("/ask", methods=["POST"])`
+   - Explain: "This decorator tells Flask that when a POST request comes to `/api/ask` (remember the Blueprint prefix!), the `ask()` function should run."
+   - Show getting user input: `data = request.get_json()`, `prompt = data.get('prompt')`
+   - Explain that `request.get_json()` gets the data sent from the frontend (like from our AI chat page), and we extract the `prompt` from it.
+   - Show basic input validation: `if not prompt: return jsonify(...)`. Explain why validation is important.
+   - **Key Concept:** Flask Routing and REST APIs. "This is a standard pattern for building RESTful API endpoints in Flask - receiving data via POST and returning JSON."
+   - **Learning Objective:** Understand how to create a Flask route to receive data from a frontend and prepare it for AI processing.
+   - **Practical Example:** "Think of this endpoint like a receptionist at a hotel. When someone comes in with a question (the prompt), the receptionist (our endpoint) takes that question and passes it to the right person (the AI) to get an answer."
+
+5. Sending the Prompt and Getting the AI Response (approx. 2-3 mins)
+   - "Inside the `ask()` function, after we have the user's prompt, we interact with the AI model."
+   - **File:** `ai_routes.py` (inside `ask()` function `try` block)
+   - Show getting the model instance: `model = genai.GenerativeModel('models/gemini-1.5-pro-latest')`
+   - Explain: "We tell the library which specific AI model we want to use. Different models have different capabilities and costs."
+   - Show sending the prompt: `response = model.generate_content(full_prompt)` (mention `full_prompt` includes context, which we'll cover next)
+   - Explain: "This is the core call to the AI service. We send our prompt, and the library handles sending it over the internet and waiting for the AI's response."
+   - Show extracting the answer: `answer = response.text if hasattr(response, 'text') else str(response)`
+   - Explain: "The response we get back is an object, and we need to access the part that contains the actual generated text."
+   - Show returning the answer to the frontend: `return jsonify({'answer': answer, 'source': 'AI Demo'})`
+   - Show basic error handling: The `except Exception` block. Explain that AI calls can fail, and it's important to catch errors and inform the user.
+   - **Mistakes to Avoid:** Not handling potential network errors or API errors. Assuming the response object always has a `text` attribute.
+   - **Learning Objective:** Learn how to send a prompt to an LLM using the client library and process the response.
+   - **Practical Example:** "Think of this like sending a text message. You type your message (the prompt), send it (the API call), and then read the reply (the response). We just need to make sure we handle any issues that might come up, like if the message fails to send."
+
+6. Adding Context from the Database Cache (approx. 2-3 mins)
+   - "One of the ways to make our AI agent more useful is to give it relevant information. In our project, we use a SQLite database cache to store previous interactions and relevant data."
+   - **Key Concept:** Database Integration (`sqlite3`). "While we used SQLite directly with the `sqlite3` library in our main project, you might use an ORM like SQLAlchemy in other projects (referencing Topic 07 if covered separately)."
+   - Show the `get_db_connection()` function (briefly explain it connects to `cache.db`).
+   - Show the `search_cache_for_context(prompt)` function.
+   - Explain its purpose: To look for relevant entries in the database based on keywords in the user's current prompt.
+   - Explain the simple SQL `LIKE` query used for searching.
+   - Show how `context_entries = search_cache_for_context(prompt)` is called in `ask()`.
+   - Show how `context_text` is built from the retrieved entries and added to the `full_prompt`.
+   - **Why it matters:** "Providing this context helps the AI understand the user's query better, especially if it relates to something discussed before or data stored in our cache."
+   - **Mistakes to Avoid:** Sending sensitive data in the prompt. Sending too much context that might exceed the AI model's token limit.
+   - **Learning Objective:** Understand how to retrieve data from a database and use it as context for an LLM prompt.
+   - **Practical Example:** "Think of this like having a conversation with someone who has a good memory. If you're talking about a topic you discussed before, they can reference that previous conversation to give you a more relevant answer. That's what we're doing here - giving our AI a 'memory' of past interactions."
+
+7. Connecting Frontend to Backend (briefly, ~0.5 min)
+   - **File:** `templates/ai.html` and `static/js/main.js` (or code directly in `ai.html`).
+   - Briefly mention the `ai.html` template provides the user interface (show the textarea and button).
+   - Briefly mention the JavaScript code uses `fetch` to send the prompt from the browser to the `/api/ask` endpoint we created and displays the response.
+   - **Learning Objective:** Understand the basic flow of data from the user interface to the Flask backend API.
+   - **Practical Example:** "This is like the user interface of a chat app - you type your message, click send, and see the response appear in the chat window."
+
+8. Conclusion (approx. 1 min)
+   - "And there you have it! We've walked through setting up our AI library, creating an endpoint to interact with it, sending prompts, processing responses, and leveraging our database cache to provide valuable context."
+   - "This is a fundamental pattern for building AI-powered features in Flask."
+   - "Remember the importance of securely handling API keys, validating input, and basic error handling."
+   - "For next steps, you could explore more advanced context retrieval methods, using different AI models, streaming responses, or adding more sophisticated error handling and monitoring (like the Prometheus metrics we briefly touched on in the main project)."
+   - "Thanks for watching!" (End screen with links to code repo, tutorial doc, etc. as per overall module plan).
+
+---
+
+Remember when recording:
+- Keep your code editor visible with large font.
+- Explain each piece of code as you show it.
+- Maintain a conversational and encouraging tone.
+- Use pauses effectively.
+- If possible, show a live demo of the AI chat working at the beginning or end.
+- Refer back to the outline points as you go.
+- Use analogies and real-world examples to explain technical concepts.
+- Highlight key points with visual cues or emphasis in your voice.
+- Encourage viewers to try the code themselves and experiment with different prompts. 
