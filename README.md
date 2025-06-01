@@ -1,4 +1,4 @@
-# Module 10: AI LLM Integration Demo
+# Demo-project: AI LLM Integration Demo
 
 This repository contains the demo code for Module 10, focusing on integrating a Large Language Model (LLM) into a Flask application.
 
